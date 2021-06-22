@@ -1,0 +1,27 @@
+kubectl apply -f - <<EOF
+apiVersion: opentelemetry.io/v1alpha1
+kind: OpenTelemetryCollector
+metadata:
+  name: aa
+spec:
+  config: |
+    receivers:
+      prometheus:
+        config:
+          scrape_configs:
+            - job_name: 'http-sd'
+              http_sd_configs:
+              - url: http://127.0.0.1:8080/job/testjob/targets?collector=${POD}
+                refresh_interval: 5s
+    processors:
+
+    exporters:
+      logging:
+
+    service:
+      pipelines:
+        traces:
+          receivers: [jaeger]
+          processors: []
+          exporters: [logging]
+EOF
